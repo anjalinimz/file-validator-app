@@ -1,7 +1,9 @@
+using file_validator_app.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace file_validator_app.Controllers;
 
@@ -24,10 +26,9 @@ public class FileController : ControllerBase
         _logger.LogInformation("file import started...");
 
         string name = file.FileName;
-
         _logger.LogInformation(name + " file import started...");
 
-        //read the file
+        //read the file and populate file tree
         await using(var memoryStream = new MemoryStream()) {
             file.CopyTo(memoryStream);
 
@@ -39,70 +40,106 @@ public class FileController : ControllerBase
         }
 
         _logger.LogInformation(name + " file import completed...");
+        var zipStructure = ValidateFileStructure(fileTree);
 
-        return NoContent();
+        return Ok(zipStructure);
     }
 
-    private List<String> ValidateFileStructure(List<String> fileTree){
+    private ZipFileStructure ValidateFileStructure(List<String> fileTree){
+
+        var zipStructure = new ZipFileStructure();
 
         var validationErrors = new List<String>();
-
+        
+        if(fileTree.Count == 0){
+            zipStructure.errors.Add("Zip file cannot be empty");
+            return zipStructure;
+        }
+        
+        String rootFolderName = fileTree[0].Split("/")[0];
         var dllsContent = new List<String>();
         var imagesContent = new List<String>();
         var languagesContent = new List<String>();
         
-        if(fileTree.Count == 0){
-            validationErrors.Add("Zip file content cannot be empty");
-            return validationErrors;
-        }
-        
-        String rootFolderName = fileTree[0].Split("/")[0];
-
         foreach(String node in fileTree){
             String[] x = node.Split("/");
             
             if(x.Length>2 && !String.IsNullOrEmpty(x[2])){
                 if(x[1].Equals("dlls")){
-                    dllsContent.Add(x[2]);
+                    zipStructure.dllsContent.Add(x[2]);
                 } else if(x[1].Equals("images")){
-                    imagesContent.Add(x[2]);
+                    zipStructure.imagesContent.Add(x[2]);
                 } else if(x[1].Equals("languages")){
-                    languagesContent.Add(x[2]);
+                    zipStructure.languagesContent.Add(x[2]);
                 } else {
-                    validationErrors.Add("zip file content is not in correct directory format");
+                    zipStructure.errors.Add("Zip file structure is invalid");
                 }
             }
         }
 
-        validationErrors.AddRange(validateDlls(dllsContent, rootFolderName));
-        validationErrors.AddRange(validateImages(imagesContent));
-        validationErrors.AddRange(validateLanguages(languagesContent));
+        // validate errors
+        var dllErrors = validateDlls(zipStructure.dllsContent, rootFolderName);
+        var imagesErrors = validateImages(zipStructure.imagesContent);
+        var langErrors = validateLanguages(zipStructure.languagesContent, rootFolderName);
 
-        return validationErrors;
+        //populate errors
+        zipStructure.dllsErrors.AddRange(dllErrors);
+        zipStructure.imagesErrors.AddRange(imagesErrors);
+        zipStructure.languagesErrors .AddRange(langErrors);
 
+        return zipStructure;
     }
 
     private IEnumerable<string> validateDlls(List<string> dllsContent, String rootFolderName)
     {
-        foreach(string file in dllsContent)
-        {
-            if(file.)
-            {
+        var errors = new List<String>();
+        
+        if(!dllsContent.Any())
+            errors.Add("Dlls should not be empty.");
+    
+        if(!dllsContent.Contains(rootFolderName+".dll"))
+            errors.Add("Dlls directory should have a dll file with the name '" +rootFolderName+ "'");
 
+        return errors;
+    }
+
+    private IEnumerable<string> validateImages(List<string> imagesContent)
+    {
+        var errors = new List<String>();
+        
+        if(!imagesContent.Any())
+            errors.Add("Images should not be empty.");
+
+        foreach(string file in imagesContent)
+        {
+            if(!(file.Contains(".png") || file.Contains(".jpg")))
+                errors.Add("File types except .png or .jpg are not allowed in Images directory");
+                break;
+        }
+
+        return errors;
+    }
+
+    private IEnumerable<string> validateLanguages(List<string> languagesContent, String rootFolderName)
+    {
+        var errors = new List<String>();
+
+        if(!languagesContent.Any())
+            errors.Add("Languages directory should not be empty.");
+
+        if(!languagesContent.Contains(rootFolderName +"_en.xml"))
+            errors.Add("Languages directory should have " + rootFolderName + "_en.xml");
+
+        var filePatternRegex = new Regex(rootFolderName + "_[a-z]{2}.xml");
+        foreach(string file in languagesContent)
+        {
+            if(!filePatternRegex.IsMatch(file)){
+                errors.Add("Languages directory files should follow  '" + rootFolderName + "_xx.xml format");
+                break;
             }
         }
-        throw new NotImplementedException();
-    }
 
-private IEnumerable<string> validateImages(List<string> imagesContent)
-    {
-        throw new NotImplementedException();
+        return errors;
     }
-
-    private IEnumerable<string> validateLanguages(List<string> languagesContent)
-    {
-        throw new NotImplementedException();
-    }
-
 
 }
