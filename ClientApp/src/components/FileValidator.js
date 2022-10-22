@@ -20,7 +20,7 @@ export const FileValidator = ({onSuccess}) => {
             data.append('file', files[i]);
         }
         
-        axios.post('//localhost:8000/upload', data)
+        axios.post('//localhost:44466/file/', data)
             .then((response) => {
                 toast.success('Upload Success');
                 onSuccess(response.data)
