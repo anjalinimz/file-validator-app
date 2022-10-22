@@ -16,10 +16,12 @@ import './style.css';
     const [langErros, setLangErrors] = useState([]);
 
     const [isValidationFailed, setIsValidationFailed] = useState([]);
+    const [isShowStructure, setIsShowStructure] = useState([]);
 
     const onInputChange = (e) => {
-        setIsValidationFailed(true);
+        setIsValidationFailed(true)
         setFiles(e.target.files)
+        setIsShowStructure(true)
     };
 
     const onClickSave = (e) => {
@@ -44,7 +46,7 @@ import './style.css';
 
     const onSubmit = (e) => {
         e.preventDefault();
-
+        setIsShowStructure(false)
         const data = new FormData();
 
         for(let i = 0; i < files.length; i++) {
@@ -82,7 +84,9 @@ import './style.css';
           <li><strong>Validate</strong>. Validate the file</li>
           <li><strong>Save</strong>. Save the file</li>
         </ul>
-        <form method="post" action="#" id="#" onSubmit={onSubmit}>
+        <hr/>
+        <div class="formdiv">
+        <form className="form" method="post" action="#" id="#" onSubmit={onSubmit}>
             <div className="form-group files">
                 <label>Upload Your File </label>
                 <input type="file"
@@ -94,7 +98,10 @@ import './style.css';
             {!isValidationFailed && <button onClick={onClickSave}>Save</button>}
         </form>
 
-        <div className="App">
+        {!isValidationFailed && <label class="validatedLabel"> &nbsp;Successfully Validated&nbsp;</label>}
+        </div>
+        <div class="vl"></div>
+        {!isShowStructure && <div className="fileStr">
         <br/>
             <div>
                 <p><strong>Folder Strucuture</strong></p>
@@ -105,39 +112,31 @@ import './style.css';
                             return <li>{item}</li>;
                         })}
                     </ul>
-                    <p style={{color:"red"}}><small>
+                    
                     {dllErrors.map(item => {
-                            return <li>{item}</li>;
+                            return <p style={{color:"red"}}><small>{item}</small></p>;
                         })}
-                        </small>
-                    </p>
                     <p>Images</p>
                     <ul>
                         {images.map(item => {
                             return <li>{item}</li>;
                         })}
                     </ul>
-                    <p style={{color:"red"}}><small>
                     {imagesErrors.map(item => {
-                            return <li>{item}</li>;
+                            return <p style={{color:"red"}}><small>{item}</small></p>;
                         })}
-                        </small>
-                    </p>
                     <p>Languages</p>
                     <ul>
                         {lang.map(item => {
                             return <li>{item}</li>;
                         })}
                     </ul>
-                    <p style={{color:"red"}}><small>
                     {langErros.map(item => {
-                            return <li>{item}</li>;
+                            return <p style={{color:"red"}}><small>{item}</small></p>;
                         })}
-                        </small>
-                    </p>
                 </div>
 
-        </div>
+        </div>}
         </div>
     )
 };

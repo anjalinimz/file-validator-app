@@ -59,6 +59,26 @@ public class FileController : ControllerBase
             return Ok();
     }
 
+
+    [HttpDelete]
+    public ActionResult DeleteZips() {
+        
+        var folderName = Path.Combine("zip");
+        var pathToDelte = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+        var di = new DirectoryInfo(pathToDelte);
+
+        foreach (FileInfo file in di.GetFiles())
+        {       
+            file.Delete(); 
+        }
+        foreach (DirectoryInfo dir in di.GetDirectories())
+        {
+            dir.Delete(true); 
+        }
+
+            return NoContent();
+    }
+    
     private ZipFileStructure ValidateFileStructure(List<String> fileTree){
 
         var zipStructure = new ZipFileStructure();
