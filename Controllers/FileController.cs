@@ -45,6 +45,20 @@ public class FileController : ControllerBase
         return Ok(zipStructure);
     }
 
+    [HttpPost("save")]
+    public async Task<IActionResult> SaveFile([FromForm] IFormFile file) {
+        
+        var folderName = Path.Combine("zip");
+        var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+        var fullPath = Path.Combine(pathToSave, file.FileName);
+        await using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            return Ok();
+    }
+
     private ZipFileStructure ValidateFileStructure(List<String> fileTree){
 
         var zipStructure = new ZipFileStructure();
@@ -53,6 +67,7 @@ public class FileController : ControllerBase
         
         if(fileTree.Count == 0){
             zipStructure.errors.Add("Zip file cannot be empty");
+            zipStructure.isValidationFailed = true;
             return zipStructure;
         }
         
@@ -64,15 +79,15 @@ public class FileController : ControllerBase
         foreach(String node in fileTree){
             String[] x = node.Split("/");
             
-            if(x.Length>2 && !String.IsNullOrEmpty(x[2])){
-                if(x[1].Equals("dlls")){
+            if(x.Length>2 && !string.IsNullOrEmpty(x[2])){
+                if(string.Equals(x[1],"dlls")){
                     zipStructure.dllsContent.Add(x[2]);
-                } else if(x[1].Equals("images")){
+                } else if(string.Equals(x[1],"images")){
                     zipStructure.imagesContent.Add(x[2]);
-                } else if(x[1].Equals("languages")){
+                } else if(string.Equals(x[1],"languages")){
                     zipStructure.languagesContent.Add(x[2]);
                 } else {
-                    zipStructure.errors.Add("Zip file structure is invalid");
+                    zipStructure.errors.Add("Zip file structure is invalid. Un-recognized file path : "+ node);
                 }
             }
         }
@@ -87,6 +102,7 @@ public class FileController : ControllerBase
         zipStructure.imagesErrors.AddRange(imagesErrors);
         zipStructure.languagesErrors .AddRange(langErrors);
 
+        zipStructure.isValidationFailed = zipStructure.errors.Any() || dllErrors.Any() || langErrors.Any() || imagesErrors.Any();
         return zipStructure;
     }
 

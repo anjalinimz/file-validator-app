@@ -28,4 +28,6 @@ public class ZipFileStructure
 
     public List<string> errors {get; set;} 
 
+    public bool isValidationFailed { get; set; }
+
 }

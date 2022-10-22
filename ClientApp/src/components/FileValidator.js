@@ -4,11 +4,42 @@ import { toast} from 'react-toastify';
 
 import './style.css';
 
-export const FileValidator = ({onSuccess}) => {
+  export const FileValidator = ({onSuccess}) => {
     const [files, setFiles] = useState([]);
+    
+    const [dll, setDll] = useState([]);
+    const [images, setImg] = useState([]);
+    const [lang, setLang] = useState([]);
+
+    const [dllErrors, setDllErrors] = useState([]);
+    const [imagesErrors, setImagesErrors] = useState([]);
+    const [langErros, setLangErrors] = useState([]);
+
+    const [isValidationFailed, setIsValidationFailed] = useState([]);
 
     const onInputChange = (e) => {
+        setIsValidationFailed(true);
         setFiles(e.target.files)
+    };
+
+    const onClickSave = (e) => {
+        e.preventDefault();
+
+        const data = new FormData();
+
+        for(let i = 0; i < files.length; i++) {
+            data.append('file', files[i]);
+        }
+       
+        axios.post('//localhost:44466/file/save', data)
+            .then((response) => {
+
+                toast.success('Save Success');
+                onSuccess(response.data)
+            })
+            .catch((e) => {
+                toast.error('Save Error')
+            })
     };
 
     const onSubmit = (e) => {
@@ -19,9 +50,20 @@ export const FileValidator = ({onSuccess}) => {
         for(let i = 0; i < files.length; i++) {
             data.append('file', files[i]);
         }
-        
+       
         axios.post('//localhost:44466/file/', data)
             .then((response) => {
+                
+                setDll(response.data.dllsContent)
+                setImg(response.data.imagesContent)
+                setLang(response.data.languagesContent)
+                
+                setDllErrors(response.data.dllsErrors)
+                setImagesErrors(response.data.imagesErrors)
+                setLangErrors(response.data.languagesErrors)
+
+                setIsValidationFailed(response.data.isValidationFailed)
+
                 toast.success('Upload Success');
                 onSuccess(response.data)
             })
@@ -48,9 +90,54 @@ export const FileValidator = ({onSuccess}) => {
                        className="form-control"
                        multiple/>
             </div>
-
-            <button>Save</button>
+            {isValidationFailed && <button type="submit">Validate</button>}
+            {!isValidationFailed && <button onClick={onClickSave}>Save</button>}
         </form>
+
+        <div className="App">
+        <br/>
+            <div>
+                <p><strong>Folder Strucuture</strong></p>
+              
+                    <p>Dlls</p>
+                    <ul>
+                        {dll.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                    </ul>
+                    <p style={{color:"red"}}><small>
+                    {dllErrors.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                        </small>
+                    </p>
+                    <p>Images</p>
+                    <ul>
+                        {images.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                    </ul>
+                    <p style={{color:"red"}}><small>
+                    {imagesErrors.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                        </small>
+                    </p>
+                    <p>Languages</p>
+                    <ul>
+                        {lang.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                    </ul>
+                    <p style={{color:"red"}}><small>
+                    {langErros.map(item => {
+                            return <li>{item}</li>;
+                        })}
+                        </small>
+                    </p>
+                </div>
+
+        </div>
         </div>
     )
 };
