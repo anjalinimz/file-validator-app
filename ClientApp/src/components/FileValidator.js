@@ -5,22 +5,27 @@ import { toast} from 'react-toastify';
 import './style.css';
 
   export const FileValidator = ({onSuccess}) => {
+    
     const [files, setFiles] = useState([]);
     
+    // Define varibles to hold folder contents
     const [dll, setDll] = useState([]);
     const [images, setImg] = useState([]);
     const [lang, setLang] = useState([]);
-    const [disable, setDisable] = useState(0)
 
+    // Define variables to hold validation errors
     const [dllErrors, setDllErrors] = useState([]);
     const [imagesErrors, setImagesErrors] = useState([]);
     const [langErros, setLangErrors] = useState([]);
     const [errors, setErrors] = useState([]);
     const [structureErrors, setstructureErrors] = useState([]);
 
+    const [disable, setDisable] = useState(0)
+
     const [isValidationFailed, setIsValidationFailed] = useState([]);
     const [isNotShowStructure, setIsNotShowStructure] = useState([]);
 
+    // Event triggered when user choose a file using the file uploader
     const onInputChange = (e) => {
         setIsValidationFailed(true)
         setFiles(e.target.files)
@@ -29,6 +34,7 @@ import './style.css';
         setIsNotShowStructure(true)
     };
 
+    // Event triggered when user clicks the save button
     const onClickSave = (e) => {
         e.preventDefault();
 
@@ -49,6 +55,7 @@ import './style.css';
             })
     };
 
+    // Event triggered when user clicks the validate button
     const onSubmit = (e) => {
         e.preventDefault();
         setIsNotShowStructure(false)
@@ -57,12 +64,12 @@ import './style.css';
         for(let i = 0; i < files.length; i++) {
             data.append('file', files[i]);
         }
-        if(!files.length >0){
-            alert("Your file is being uploaded!")
-        }
+
+        // Send REST call to the backend to validate the uploaded file
         axios.post('//localhost:44466/file/', data)
             .then((response) => {
                 
+                // Populate variables retrieved from the response
                 setDll(response.data.dllsContent)
                 setImg(response.data.imagesContent)
                 setLang(response.data.languagesContent)
@@ -84,77 +91,79 @@ import './style.css';
 
     return (
         
+        // Render the UI
         <div>
-        <h1>File Validator</h1>
-        <p>Welcome to your smart file validator</p>
-        <p>To get started, please follow the instruction given below,</p>
-        <ul>
-          <li><strong>Upload</strong>. Upload your zip file to the app</li>
-          <li><strong>Validate</strong>. Validate the file</li>
-          <li><strong>Save</strong>. Save the file</li>
-        </ul>
-        <hr/>
-        <div className="formdiv">
-        <form className="form" method="post" action="#" id="#" onSubmit={onSubmit}>
-            <div className="form-group files">
-                <label>Upload Your File </label>
-                <input type="file"
-                       onChange={onInputChange}
-                       className="form-control"
-                       multiple/>
-            </div>
-            {isValidationFailed && <button type="submit" disabled={disable === 0}>Validate</button>}
-            {!isValidationFailed && <button onClick={onClickSave}>Save</button>}
-        </form>
-
-        {!isValidationFailed && <label class="validatedLabel"> &nbsp;Successfully Validated&nbsp;</label>}
-        <br/>
-        {errors.length>0 && !isNotShowStructure &&  <p>Errors (Fix errors and try again)</p>}
-        {errors.map(item => {
-                            return !isNotShowStructure && <p style={{color:"red"}}><strong>{item}</strong></p>;
-                        })}
-        {structureErrors.length>0 && !isNotShowStructure && <p>Strucuture errors <br/> (Remove extra files or folders mentioned below. If any folder is missing, add it and try again)</p>}                
-        {structureErrors.map(item => {
-                            return !isNotShowStructure && <p style={{color:"red"}}><small>{item}</small></p>;
-                        })}
-        </div>
-        <div class="vl"></div>
-        {!isNotShowStructure && !(errors.length > 0) && <div className="fileStr">
-        <br/>
-            <div>
-                <p><strong>Folder Strucuture</strong></p>
-              
-                    <p>dlls</p>
-                    <ul>
-                        {dll.map(item => {
-                            return <li>{item}</li>;
-                        })}
-                    </ul>
-                    
-                    {dllErrors.map(item => {
-                            return <p style={{color:"red"}}><small>{item}</small></p>;
-                        })}
-                    <p>Images</p>
-                    <ul>
-                        {images.map(item => {
-                            return <li>{item}</li>;
-                        })}
-                    </ul>
-                    {imagesErrors.map(item => {
-                            return <p style={{color:"red"}}><small>{item}</small></p>;
-                        })}
-                    <p>Languages</p>
-                    <ul>
-                        {lang.map(item => {
-                            return <li>{item}</li>;
-                        })}
-                    </ul>
-                    {langErros.map(item => {
-                            return <p style={{color:"red"}}><small>{item}</small></p>;
-                        })}
+            <h1>File Validator</h1>
+            <p>Welcome to your smart file validator</p>
+            <p>To get started, please follow the instruction given below,</p>
+            <ul>
+            <li><strong>Upload</strong>. Upload your zip file to the app</li>
+            <li><strong>Validate</strong>. Validate the file</li>
+            <li><strong>Save</strong>. Save the file</li>
+            </ul>
+            <hr/>
+            <div className="formdiv">
+            <form className="form" method="post" action="#" id="#" onSubmit={onSubmit}>
+                <div className="form-group files">
+                    <label>Upload Your File </label>
+                    <input type="file"
+                        onChange={onInputChange}
+                        className="form-control"
+                        multiple/>
                 </div>
+                {isValidationFailed && <button type="submit" disabled={disable === 0}>Validate</button>}
+                {!isValidationFailed && <button onClick={onClickSave}>Save</button>}
+            </form>
 
-        </div>}
+            {!isValidationFailed && <label class="validatedLabel"> &nbsp;Successfully Validated&nbsp;</label>}
+            <br/>
+            {errors.length>0 && !isNotShowStructure &&  <p>Errors (Fix errors and try again)</p>}
+            {errors.map(item => {
+                                return !isNotShowStructure && <p style={{color:"red"}}><strong>{item}</strong></p>;
+                            })}
+            {structureErrors.length>0 && !isNotShowStructure && <p>Strucuture errors <br/> (Remove extra files or folders mentioned below. If any folder is missing, add it and try again)</p>}                
+            {structureErrors.map(item => {
+                                return !isNotShowStructure && <p style={{color:"red"}}><small>{item}</small></p>;
+                            })}
+            </div>
+
+            <div class="vl"></div>
+            {!isNotShowStructure && !(errors.length > 0) && <div className="fileStr">
+            <br/>
+                <div>
+                    <p><strong>Folder Strucuture</strong></p>
+                
+                        <p>dlls</p>
+                        <ul>
+                            {dll.map(item => {
+                                return <li>{item}</li>;
+                            })}
+                        </ul>
+                        
+                        {dllErrors.map(item => {
+                                return <p style={{color:"red"}}><small>{item}</small></p>;
+                            })}
+                        <p>Images</p>
+                        <ul>
+                            {images.map(item => {
+                                return <li>{item}</li>;
+                            })}
+                        </ul>
+                        {imagesErrors.map(item => {
+                                return <p style={{color:"red"}}><small>{item}</small></p>;
+                            })}
+                        <p>Languages</p>
+                        <ul>
+                            {lang.map(item => {
+                                return <li>{item}</li>;
+                            })}
+                        </ul>
+                        {langErros.map(item => {
+                                return <p style={{color:"red"}}><small>{item}</small></p>;
+                            })}
+                    </div>
+
+            </div>}
         </div>
     )
 };

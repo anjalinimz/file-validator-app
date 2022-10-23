@@ -27,7 +27,7 @@ public class FileController : ControllerBase
 
         string name = file.FileName;
 
-        //read the file and populate file tree
+        // Read the file and populate file tree
         await using(var memoryStream = new MemoryStream()) 
         {
             file.CopyTo(memoryStream);
@@ -49,7 +49,7 @@ public class FileController : ControllerBase
     [HttpPost("save")]
     public async Task<IActionResult> SaveFile([FromForm] IFormFile file) 
     {
-        
+        // Save validated zip file in the 'zips' folder
         var folderName = Path.Combine("zips");
         var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
         var fullPath = Path.Combine(pathToSave, file.FileName);
@@ -65,6 +65,7 @@ public class FileController : ControllerBase
     [HttpDelete]
     public ActionResult DeleteZips() 
     {
+        // Delete files saved in 'zips' folder
         var folderName = Path.Combine("zip");
         var pathToDelte = Path.Combine(Directory.GetCurrentDirectory(), folderName);
         var di = new DirectoryInfo(pathToDelte);

@@ -11,12 +11,17 @@ public class ZipFileValidatorService : IValidatorService
          _logger = logger;
     }
 
+    // Validate uploaded file
     public Structure validateStructure(string name, List<String> fileTree)
     {
         var zipStructure = new ZipFileStructure();
 
         var validationErrors = new List<String>();
         
+        /*
+         * Check whether the uploaded file is a zip file or not.
+         * And check whether the uploaded file is not empty. 
+         */
         if(!name.Contains(".zip"))
         {
             zipStructure.errors.Add("Uploaded File should be a zip file");
@@ -38,12 +43,13 @@ public class ZipFileValidatorService : IValidatorService
         bool imageFound = false;
         bool langFound = false;
         
+        // Define valid directory structure
         foreach(string node in fileTree)
         {
             string[] x = node.Split("/");
             _logger.LogInformation(node);
 
-            // contruct the zip strucuture by populating the directoty contents
+            // Construct the ZipFileStructure by populating the directory contents
             if(x.Length>2)
             {
                     if(string.Equals(x[1],"dlls"))
@@ -69,14 +75,14 @@ public class ZipFileValidatorService : IValidatorService
 
                     } else 
                     {
-                        // if there were directories, other than dlls, images and languages, will add a structure error. 
+                        // If there were directories, other than dlls, images and languages, will add a structure error. 
                         zipStructure.structureErrors.Add(node+ " folder/file does not adhere to the correct strucure.");
                     }
             } 
             
         }
 
-        // if one of the must have directories are missing, will throw an exception immediately. 
+        // If one of the required directories is missing, the application will give user an error. 
         if(!(dllFound && imageFound && langFound)){
             zipStructure.errors.Add("Zip file does not adhere to the correct structure");
             zipStructure.errors.Add("Zip file should contain dlls, images, langauages directories");
@@ -84,17 +90,17 @@ public class ZipFileValidatorService : IValidatorService
             return zipStructure;    
         }
 
-        // validate directory content and populate errors
+        // Validate directory content and populate errors
         var dllErrors = validateDlls(zipStructure.dllsContent, rootFolderName);
         var imagesErrors = validateImages(zipStructure.imagesContent);
         var langErrors = validateLanguages(zipStructure.languagesContent, rootFolderName);
 
-        //populate errors in the zip structure
+        // Populate errors in the zip structure
         zipStructure.dllsErrors.AddRange(dllErrors);
         zipStructure.imagesErrors.AddRange(imagesErrors);
         zipStructure.languagesErrors .AddRange(langErrors);
 
-        // add the validation result to zip strucuture.
+        // Add the validation result to zip strucuture.
         zipStructure.isValidationFailed = zipStructure.errors.Any() || dllErrors.Any() || langErrors.Any() || imagesErrors.Any();
         
         return zipStructure;
