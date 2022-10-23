@@ -103,11 +103,11 @@ import './style.css';
 
         {!isValidationFailed && <label class="validatedLabel"> &nbsp;Successfully Validated&nbsp;</label>}
         <br/>
-        {errors.length>0 && !isNotShowStructure &&  <p>Errors</p>}
+        {errors.length>0 && !isNotShowStructure &&  <p>Errors (Fix errors and try again)</p>}
         {errors.map(item => {
                             return !isNotShowStructure && <p style={{color:"red"}}><strong>{item}</strong></p>;
                         })}
-        {structureErrors.length>0 && !isNotShowStructure && <p>Strucuture errors</p>}                
+        {structureErrors.length>0 && !isNotShowStructure && <p>Strucuture errors <br/> (Remove extra files or folders mentioned below. If any folder is missing, add it and try again)</p>}                
         {structureErrors.map(item => {
                             return !isNotShowStructure && <p style={{color:"red"}}><small>{item}</small></p>;
                         })}

@@ -233,4 +233,4 @@ _Pvt_Extensions
 .fake/
 
 #contents in the zip folder
-zip/*
+zips/*
