@@ -59,12 +59,10 @@
     float:right; 
 }
 
-.validatedLabel {
-    margin-top: 2px;
-    margin-left: 5px;
-    text-align: middle;
-    vertical-align: middle;
-    float: right;
+.validatedLabel { 
+    padding-top: 10px;
+    width: 660px;
+    text-align: center;
     color: green;
     font-size: x-large;
   }

@@ -10,6 +10,7 @@ import './style.css';
     const [dll, setDll] = useState([]);
     const [images, setImg] = useState([]);
     const [lang, setLang] = useState([]);
+    const [disable, setDisable] = useState(0)
 
     const [dllErrors, setDllErrors] = useState([]);
     const [imagesErrors, setImagesErrors] = useState([]);
@@ -23,6 +24,8 @@ import './style.css';
     const onInputChange = (e) => {
         setIsValidationFailed(true)
         setFiles(e.target.files)
+        setDisable(e.target.files.length)
+        console.log(e.target.files.length);
         setIsNotShowStructure(true)
     };
 
@@ -54,7 +57,9 @@ import './style.css';
         for(let i = 0; i < files.length; i++) {
             data.append('file', files[i]);
         }
-       
+        if(!files.length >0){
+            alert("Your file is being uploaded!")
+        }
         axios.post('//localhost:44466/file/', data)
             .then((response) => {
                 
@@ -78,6 +83,7 @@ import './style.css';
     };
 
     return (
+        
         <div>
         <h1>File Validator</h1>
         <p>Welcome to your smart file validator</p>
@@ -97,7 +103,7 @@ import './style.css';
                        className="form-control"
                        multiple/>
             </div>
-            {isValidationFailed && <button type="submit">Validate</button>}
+            {isValidationFailed && <button type="submit" disabled={disable === 0}>Validate</button>}
             {!isValidationFailed && <button onClick={onClickSave}>Save</button>}
         </form>
 

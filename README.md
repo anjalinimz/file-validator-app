@@ -103,7 +103,7 @@ To `delete` zip files stored in 'zips' folder, use API endpoind implemented in t
 
 ## Conclusion
 
-This application implemented by Anjali Wijesinghe as the soltion for the test task provided by Derivco. It is a scalable solution because it uses solid principles in software engineering. The UI/UX can be improved using more user friendly designs.  
+This application implemented by Anjali Wijesinghe as the soltion for the test task provided by Derivco(test task description and sample zip file provided by Derivco are added inside the 'TestTask' folder). It is a scalable solution because it uses solid principles in software engineering. The UI/UX can be improved using more user friendly designs.  
 
 Open for your feedbacks and questions: <br>
 anjalinimz@gmail.com
