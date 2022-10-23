@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Authentication;
+using file_validator_app.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<IValidatorService, ZipFileValidatorService>();
 
 var app = builder.Build();
 

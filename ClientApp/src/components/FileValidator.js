@@ -14,14 +14,16 @@ import './style.css';
     const [dllErrors, setDllErrors] = useState([]);
     const [imagesErrors, setImagesErrors] = useState([]);
     const [langErros, setLangErrors] = useState([]);
+    const [errors, setErrors] = useState([]);
+    const [structureErrors, setstructureErrors] = useState([]);
 
     const [isValidationFailed, setIsValidationFailed] = useState([]);
-    const [isShowStructure, setIsShowStructure] = useState([]);
+    const [isNotShowStructure, setIsNotShowStructure] = useState([]);
 
     const onInputChange = (e) => {
         setIsValidationFailed(true)
         setFiles(e.target.files)
-        setIsShowStructure(true)
+        setIsNotShowStructure(true)
     };
 
     const onClickSave = (e) => {
@@ -46,7 +48,7 @@ import './style.css';
 
     const onSubmit = (e) => {
         e.preventDefault();
-        setIsShowStructure(false)
+        setIsNotShowStructure(false)
         const data = new FormData();
 
         for(let i = 0; i < files.length; i++) {
@@ -63,7 +65,8 @@ import './style.css';
                 setDllErrors(response.data.dllsErrors)
                 setImagesErrors(response.data.imagesErrors)
                 setLangErrors(response.data.languagesErrors)
-
+                setErrors(response.data.errors)
+                setstructureErrors(response.data.structureErrors)
                 setIsValidationFailed(response.data.isValidationFailed)
 
                 toast.success('Upload Success');
@@ -85,7 +88,7 @@ import './style.css';
           <li><strong>Save</strong>. Save the file</li>
         </ul>
         <hr/>
-        <div class="formdiv">
+        <div className="formdiv">
         <form className="form" method="post" action="#" id="#" onSubmit={onSubmit}>
             <div className="form-group files">
                 <label>Upload Your File </label>
@@ -99,14 +102,23 @@ import './style.css';
         </form>
 
         {!isValidationFailed && <label class="validatedLabel"> &nbsp;Successfully Validated&nbsp;</label>}
+        <br/>
+        {errors.length>0 && !isNotShowStructure &&  <p>Errors</p>}
+        {errors.map(item => {
+                            return !isNotShowStructure && <p style={{color:"red"}}><strong>{item}</strong></p>;
+                        })}
+        {structureErrors.length>0 && !isNotShowStructure && <p>Strucuture errors</p>}                
+        {structureErrors.map(item => {
+                            return !isNotShowStructure && <p style={{color:"red"}}><small>{item}</small></p>;
+                        })}
         </div>
         <div class="vl"></div>
-        {!isShowStructure && <div className="fileStr">
+        {!isNotShowStructure && !(errors.length > 0) && <div className="fileStr">
         <br/>
             <div>
                 <p><strong>Folder Strucuture</strong></p>
               
-                    <p>Dlls</p>
+                    <p>dlls</p>
                     <ul>
                         {dll.map(item => {
                             return <li>{item}</li>;

@@ -1,6 +1,6 @@
-namespace file_validator_app.Models;
+namespace file_validator_app.Data.Models;
 
-public class ZipFileStructure
+public class ZipFileStructure : Structure
 {
 
     public ZipFileStructure()
@@ -11,6 +11,7 @@ public class ZipFileStructure
         this.dllsErrors = new List<string>();
         this.imagesErrors = new List<string>();
         this.languagesErrors = new List<string>();
+        this.structureErrors = new List<string>();
         this.errors = new List<string>();
     }
 
@@ -25,6 +26,8 @@ public class ZipFileStructure
     public List<string> imagesErrors {get; set;} 
 
     public List<string> languagesErrors {get; set;} 
+
+    public List<string> structureErrors {get; set;} 
 
     public List<string> errors {get; set;} 
 
