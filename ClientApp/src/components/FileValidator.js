@@ -22,8 +22,8 @@ import './style.css';
 
     const [disable, setDisable] = useState(0)
 
-    const [isValidationFailed, setIsValidationFailed] = useState([]);
-    const [isNotShowStructure, setIsNotShowStructure] = useState([]);
+    const [isValidationFailed, setIsValidationFailed] = useState(true);
+    const [isNotShowStructure, setIsNotShowStructure] = useState(true);
 
     // Event triggered when user choose a file using the file uploader
     const onInputChange = (e) => {
