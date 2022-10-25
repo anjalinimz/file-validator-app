@@ -60,9 +60,10 @@
 }
 
 .validatedLabel { 
-    padding-top: 10px;
-    width: 660px;
+    margin-top: 20px;
+    padding-top: 2px;
     text-align: center;
     color: green;
     font-size: x-large;
+    border-style: double;
   }
